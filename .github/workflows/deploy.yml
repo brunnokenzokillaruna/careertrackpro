@@ -20,10 +20,11 @@ jobs:
 
       - name: Clean install dependencies
         run: |
-          npm clean-install
-          npm cache clean --force
           rm -rf node_modules
-          npm install --legacy-peer-deps
+          rm -f package-lock.json
+          npm install --no-package-lock
+          npm install react-big-calendar@1.8.5 --legacy-peer-deps
+          npm install @types/react-big-calendar --legacy-peer-deps
 
       - name: Build
         run: npm run build

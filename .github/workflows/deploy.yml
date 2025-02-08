@@ -29,7 +29,9 @@ jobs:
           npm install @types/react-big-calendar --save-dev --legacy-peer-deps
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run build
+          touch out/.nojekyll
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

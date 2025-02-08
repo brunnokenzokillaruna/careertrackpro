@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '@/components/common/Navbar';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
 import { 
   HomeIcon, 
   BriefcaseIcon, 
   ChartBarIcon,
-  CalendarIcon,
   Cog6ToothIcon,
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
@@ -29,6 +29,25 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/');
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  const getBasePath = () => {
+    return process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro' : '';
+  };
+
+  const handleNavigation = (href: string) => {
+    router.push(`${getBasePath()}${href}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,19 +66,19 @@ export default function AppLayout({
                 {/* Primary Navigation */}
                 <div className="space-y-1">
                   {navigationItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = pathname?.includes(item.href);
                     return (
-                      <a
+                      <button
                         key={item.name}
-                        href={item.href}
-                        className={`nav-link ${isActive ? 'nav-link-active' : ''}`}
+                        onClick={() => handleNavigation(item.href)}
+                        className={`nav-link w-full text-left ${isActive ? 'nav-link-active' : ''}`}
                       >
                         <item.icon 
                           className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
                           aria-hidden="true" 
                         />
                         {item.name}
-                      </a>
+                      </button>
                     );
                   })}
                 </div>
@@ -67,19 +86,19 @@ export default function AppLayout({
                 {/* Secondary Navigation */}
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   {secondaryNavigation.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = pathname?.includes(item.href);
                     return (
-                      <a
+                      <button
                         key={item.name}
-                        href={item.href}
-                        className={`nav-link ${isActive ? 'nav-link-active' : ''}`}
+                        onClick={() => handleNavigation(item.href)}
+                        className={`nav-link w-full text-left ${isActive ? 'nav-link-active' : ''}`}
                       >
                         <item.icon 
                           className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
                           aria-hidden="true" 
                         />
                         {item.name}
-                      </a>
+                      </button>
                     );
                   })}
                 </div>

@@ -6,8 +6,8 @@ const nextConfig = {
     unoptimized: true,
     domains: ['github.io'],
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/careertrackpro' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/careertrackpro/' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro/' : '',
   trailingSlash: true,
 };
 

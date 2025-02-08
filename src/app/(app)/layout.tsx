@@ -13,19 +13,15 @@ import {
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
-const getBasePath = () => {
-  return process.env.NODE_ENV === 'production' ? '/careertrackpro' : '';
-};
-
 const navigationItems = [
-  { name: 'Dashboard', href: `${getBasePath()}/dashboard`, icon: HomeIcon },
-  { name: 'Applications', href: `${getBasePath()}/applications`, icon: BriefcaseIcon },
-  { name: 'Monthly Summary', href: `${getBasePath()}/monthly-summary`, icon: ChartBarIcon },
+  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Applications', href: '/applications', icon: BriefcaseIcon },
+  { name: 'Monthly Summary', href: '/monthly-summary', icon: ChartBarIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Settings', href: `${getBasePath()}/settings`, icon: Cog6ToothIcon },
-  { name: 'Help', href: `${getBasePath()}/help`, icon: QuestionMarkCircleIcon },
+  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+  { name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
 ];
 
 export default function AppLayout({
@@ -40,14 +36,19 @@ export default function AppLayout({
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push(getBasePath() + '/');
+        router.push('/');
       }
     };
     checkAuth();
   }, [router]);
 
   const isActivePath = (href: string) => {
-    return pathname === href;
+    const currentPath = pathname?.replace('/careertrackpro', '') || '';
+    return currentPath === href;
+  };
+
+  const getFullPath = (href: string) => {
+    return process.env.NODE_ENV === 'production' ? `/careertrackpro${href}` : href;
   };
 
   return (
@@ -71,12 +72,20 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={item.href}
-                        className={`nav-link w-full text-left flex items-center ${isActive ? 'nav-link-active' : ''}`}
+                        href={getFullPath(item.href)}
+                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                          isActive
+                            ? 'bg-teal-50 text-teal-600'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
                       >
-                        <item.icon 
-                          className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
-                          aria-hidden="true" 
+                        <item.icon
+                          className={`mr-3 h-6 w-6 flex-shrink-0 ${
+                            isActive
+                              ? 'text-teal-600'
+                              : 'text-gray-400 group-hover:text-gray-500'
+                          }`}
+                          aria-hidden="true"
                         />
                         {item.name}
                       </Link>
@@ -91,12 +100,20 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={item.href}
-                        className={`nav-link w-full text-left flex items-center ${isActive ? 'nav-link-active' : ''}`}
+                        href={getFullPath(item.href)}
+                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                          isActive
+                            ? 'bg-teal-50 text-teal-600'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
                       >
-                        <item.icon 
-                          className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
-                          aria-hidden="true" 
+                        <item.icon
+                          className={`mr-3 h-6 w-6 flex-shrink-0 ${
+                            isActive
+                              ? 'text-teal-600'
+                              : 'text-gray-400 group-hover:text-gray-500'
+                          }`}
+                          aria-hidden="true"
                         />
                         {item.name}
                       </Link>

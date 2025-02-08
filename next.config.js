@@ -4,12 +4,11 @@ const nextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
+    domains: ['github.io'],
   },
-  ...(process.env.NODE_ENV === 'production' ? {
-    basePath: '/CareerTrack-Pro',
-    assetPrefix: '/CareerTrack-Pro/',
-    trailingSlash: true,
-  } : {})
+  basePath: process.env.NODE_ENV === 'production' ? '/careertrackpro' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/careertrackpro/' : '',
+  trailingSlash: true,
 };
 
 module.exports = nextConfig; 

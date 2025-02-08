@@ -5,8 +5,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: '/CareerTrack-Pro',
-  assetPrefix: '/CareerTrack-Pro',
+  ...(process.env.NODE_ENV === 'production' ? {
+    basePath: '/CareerTrack-Pro',
+    assetPrefix: '/CareerTrack-Pro/',
+    trailingSlash: true,
+  } : {})
 };
 
 module.exports = nextConfig; 

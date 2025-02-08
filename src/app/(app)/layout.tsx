@@ -35,7 +35,7 @@ export default function AppLayout({
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/');
+        router.push(getBasePath() + '/');
       }
     };
     checkAuth();
@@ -46,8 +46,15 @@ export default function AppLayout({
   };
 
   const handleNavigation = (href: string) => {
-    const cleanHref = href.replace(/^\/careertrackpro/, '');
-    router.push(`${getBasePath()}${cleanHref}`);
+    // Remove any existing base path and ensure proper formatting
+    const cleanHref = href.replace(/^\/careertrackpro/, '').replace(/^\/+/, '/');
+    const fullPath = `${getBasePath()}${cleanHref}`;
+    router.push(fullPath);
+  };
+
+  const isActivePath = (href: string) => {
+    const currentPath = pathname?.replace(getBasePath(), '') || '';
+    return currentPath.startsWith(href);
   };
 
   return (
@@ -67,7 +74,7 @@ export default function AppLayout({
                 {/* Primary Navigation */}
                 <div className="space-y-1">
                   {navigationItems.map((item) => {
-                    const isActive = pathname?.includes(item.href);
+                    const isActive = isActivePath(item.href);
                     return (
                       <button
                         key={item.name}
@@ -87,7 +94,7 @@ export default function AppLayout({
                 {/* Secondary Navigation */}
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   {secondaryNavigation.map((item) => {
-                    const isActive = pathname?.includes(item.href);
+                    const isActive = isActivePath(item.href);
                     return (
                       <button
                         key={item.name}

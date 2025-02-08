@@ -154,6 +154,36 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
     }
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      if (!application) return;
+
+      // First, delete any associated interviews
+      const { error: interviewDeleteError } = await supabase
+        .from('interviews')
+        .delete()
+        .eq('application_id', application.id);
+
+      if (interviewDeleteError) throw interviewDeleteError;
+
+      // Then delete the application
+      const { error } = await supabase
+        .from('job_applications')
+        .delete()
+        .eq('id', application.id);
+
+      if (error) throw error;
+      toast.success('Application deleted successfully');
+      onClose();
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      toast.error('Failed to delete application');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (

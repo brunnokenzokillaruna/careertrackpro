@@ -35,7 +35,7 @@ export default function Navbar() {
         .from('interviews')
         .select(`
           *,
-          job_applications (
+          job_applications!inner (
             company,
             position
           )
@@ -45,37 +45,42 @@ export default function Navbar() {
         .lte('interview_date', nextWeek.toISOString())
         .order('interview_date', { ascending: true });
 
-      if (interviews) {
-        const notifs = interviews.map(interview => {
-          const interviewDate = new Date(interview.interview_date);
-          const daysUntil = Math.ceil((interviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          
-          let timeMessage = '';
-          if (daysUntil === 0) {
-            timeMessage = 'Today';
-          } else if (daysUntil === 1) {
-            timeMessage = 'Tomorrow';
-          } else {
-            timeMessage = `In ${daysUntil} days`;
-          }
+      if (interviews && interviews.length > 0) {
+        const notifs = interviews
+          .filter(interview => interview.job_applications) // Filter out interviews with deleted applications
+          .map(interview => {
+            const interviewDate = new Date(interview.interview_date);
+            const daysUntil = Math.ceil((interviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            
+            let timeMessage = '';
+            if (daysUntil === 0) {
+              timeMessage = 'Today';
+            } else if (daysUntil === 1) {
+              timeMessage = 'Tomorrow';
+            } else {
+              timeMessage = `In ${daysUntil} days`;
+            }
 
-          return {
-            id: interview.id,
-            title: `Interview ${timeMessage}`,
-            message: `Interview at ${interview.job_applications.company} for ${interview.job_applications.position} position`,
-            date: interviewDate.toLocaleString('en-US', { 
-              weekday: 'short',
-              month: 'short', 
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit'
-            })
-          };
-        });
+            return {
+              id: interview.id,
+              title: `Interview ${timeMessage}`,
+              message: `Interview at ${interview.job_applications.company} for ${interview.job_applications.position} position`,
+              date: interviewDate.toLocaleString('en-US', { 
+                weekday: 'short',
+                month: 'short', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+              })
+            };
+          });
         setNotifications(notifs);
+      } else {
+        setNotifications([]);
       }
     } catch (error) {
       console.error('Error loading notifications:', error);
+      setNotifications([]);
     }
   };
 

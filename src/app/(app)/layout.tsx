@@ -13,15 +13,16 @@ import {
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
+// Define base navigation items without any path manipulation
 const navigationItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Applications', href: '/applications', icon: BriefcaseIcon },
-  { name: 'Monthly Summary', href: '/monthly-summary', icon: ChartBarIcon },
+  { name: 'Dashboard', href: 'dashboard', icon: HomeIcon },
+  { name: 'Applications', href: 'applications', icon: BriefcaseIcon },
+  { name: 'Monthly Summary', href: 'monthly-summary', icon: ChartBarIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-  { name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
+  { name: 'Settings', href: 'settings', icon: Cog6ToothIcon },
+  { name: 'Help', href: 'help', icon: QuestionMarkCircleIcon },
 ];
 
 export default function AppLayout({
@@ -42,13 +43,9 @@ export default function AppLayout({
     checkAuth();
   }, [router]);
 
+  // Simplified active path check
   const isActivePath = (href: string) => {
-    const currentPath = pathname?.replace('/careertrackpro', '') || '';
-    return currentPath === href;
-  };
-
-  const getFullPath = (href: string) => {
-    return process.env.NODE_ENV === 'production' ? `/careertrackpro${href}` : href;
+    return pathname?.includes(href) || false;
   };
 
   return (
@@ -72,7 +69,7 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={getFullPath(item.href)}
+                        href={`/${item.href}`}
                         className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'
@@ -100,7 +97,7 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={getFullPath(item.href)}
+                        href={`/${item.href}`}
                         className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'

@@ -8,15 +8,7 @@ const nextConfig = {
   basePath: process.env.NODE_ENV === 'production' ? '/careertrackpro' : '',
   assetPrefix: process.env.NODE_ENV === 'production' ? '/careertrackpro/' : '',
   trailingSlash: true,
-  // Add rewrites for API routes
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/:path*`,
-      },
-    ];
-  },
+  // Remove any custom rewrites or redirects for static export
 };
 
 module.exports = nextConfig; 

@@ -1,0 +1,390 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #0f766e;
+  --primary-hover: #0d9488;
+  --secondary-color: #475569;
+  --accent-color: #06b6d4;
+  --background-light: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --error-color: #ef4444;
+  --success-color: #22c55e;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50;
+  }
+
+  /* Modern Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+  }
+}
+
+@layer components {
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-teal-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  /* Form styles */
+  .form-input {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .form-select {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-blue {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  .badge-yellow {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-green {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-red {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Table styles */
+  .table-container {
+    @apply overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg;
+  }
+
+  .table {
+    @apply min-w-full divide-y divide-gray-300;
+  }
+
+  .table-header {
+    @apply bg-gray-50;
+  }
+
+  .table-header-cell {
+    @apply py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900;
+  }
+
+  .table-body {
+    @apply divide-y divide-gray-200 bg-white;
+  }
+
+  .table-row {
+    @apply hover:bg-gray-50 transition-colors duration-150;
+  }
+
+  .table-cell {
+    @apply whitespace-nowrap px-3 py-4 text-sm text-gray-500;
+  }
+
+  /* Modal styles */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black bg-opacity-50 transition-opacity;
+  }
+
+  .modal-container {
+    @apply fixed inset-0 z-50 overflow-y-auto;
+  }
+
+  .modal-content {
+    @apply relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6;
+  }
+
+  /* Calendar styles */
+  .rbc-calendar {
+    @apply rounded-lg shadow-sm border border-gray-200 bg-white font-sans h-[600px] !important;
+  }
+
+  /* Override default calendar colors */
+  .rbc-event, .rbc-background-event {
+    @apply bg-teal-600 !important;
+    @apply border-teal-700 !important;
+  }
+
+  .rbc-selected-cell {
+    @apply bg-teal-50 !important;
+  }
+
+  .rbc-today {
+    @apply bg-teal-50 !important;
+  }
+
+  .rbc-btn-group button.rbc-active {
+    @apply bg-teal-600 !important;
+    @apply text-white !important;
+    @apply border-teal-600 !important;
+  }
+
+  .rbc-btn-group button:hover {
+    @apply bg-teal-50 !important;
+  }
+
+  .rbc-btn-group button.rbc-active:hover {
+    @apply bg-teal-700 !important;
+  }
+
+  .rbc-off-range-bg {
+    @apply bg-gray-50 !important;
+  }
+
+  .rbc-header {
+    @apply py-3 font-medium text-gray-900 border-b border-gray-200 uppercase text-xs tracking-wider;
+  }
+
+  .rbc-event {
+    @apply border-none rounded-md shadow-sm px-2 py-1 !important;
+  }
+
+  .rbc-event-content {
+    @apply text-sm font-medium text-white truncate;
+  }
+
+  .rbc-show-more {
+    @apply text-xs text-teal-600 font-medium hover:text-teal-700 !important;
+  }
+
+  .rbc-month-view {
+    @apply rounded-b-lg;
+  }
+
+  .rbc-day-slot .rbc-event {
+    @apply border-l-4 border-teal-700 !important;
+  }
+
+  .rbc-current-time-indicator {
+    @apply bg-teal-600 h-0.5 !important;
+  }
+
+  /* Selected event states */
+  .rbc-selected {
+    @apply bg-teal-700 !important;
+  }
+
+  .rbc-event.rbc-selected {
+    @apply bg-teal-700 !important;
+  }
+
+  .rbc-day-slot .rbc-selected.rbc-background-event {
+    @apply bg-teal-100 !important;
+  }
+
+  /* Time slots and header styles */
+  .rbc-time-slot {
+    @apply text-gray-500;
+  }
+
+  .rbc-time-view {
+    @apply border border-gray-200;
+  }
+
+  .rbc-time-view .rbc-header {
+    @apply border-b border-gray-200;
+  }
+
+  .rbc-timeslot-group {
+    @apply border-b border-gray-200;
+  }
+
+  .rbc-time-content {
+    @apply border-t border-gray-200;
+  }
+
+  .rbc-time-header-content {
+    @apply border-l border-gray-200;
+  }
+
+  .rbc-day-bg + .rbc-day-bg {
+    @apply border-l border-gray-200;
+  }
+
+  .rbc-time-content > * + * > * {
+    @apply border-l border-gray-200;
+  }
+
+  .rbc-time-header.rbc-overflowing {
+    @apply border-r border-gray-200;
+  }
+
+  .rbc-time-view .rbc-row {
+    @apply min-h-[20px];
+  }
+
+  .rbc-time-header-gutter {
+    @apply bg-gray-50;
+  }
+
+  /* Agenda view styles */
+  .rbc-agenda-view table.rbc-agenda-table {
+    @apply border border-gray-200;
+  }
+
+  .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    @apply border-b border-gray-200;
+  }
+
+  .rbc-agenda-view table.rbc-agenda-table .rbc-agenda-time-cell {
+    @apply border-r border-gray-200;
+  }
+
+  .rbc-agenda-time-cell {
+    @apply text-gray-600;
+  }
+
+  .rbc-agenda-date-cell,
+  .rbc-agenda-time-cell,
+  .rbc-agenda-event-cell {
+    @apply text-sm;
+  }
+
+  /* Dashboard card styles */
+  .stat-card {
+    @apply overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 hover:shadow-md transition-shadow duration-200;
+  }
+
+  .stat-title {
+    @apply truncate text-sm font-medium text-gray-500;
+  }
+
+  .stat-value {
+    @apply mt-1 text-3xl font-semibold tracking-tight text-gray-900;
+  }
+
+  /* Navigation styles */
+  .nav-link {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50 flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-150;
+  }
+
+  .nav-link-active {
+    @apply bg-teal-50 text-teal-700;
+  }
+
+  .nav-icon {
+    @apply mr-3 h-6 w-6 flex-shrink-0 text-gray-400;
+  }
+
+  .nav-icon-active {
+    @apply text-teal-600;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Direct calendar color overrides */
+.rbc-event {
+  background-color: #0d9488 !important; /* teal-600 */
+  border-color: #0f766e !important; /* teal-700 */
+}
+
+.rbc-selected-cell {
+  background-color: #f0fdfa !important; /* teal-50 */
+}
+
+.rbc-today {
+  background-color: #f0fdfa !important; /* teal-50 */
+}
+
+.rbc-btn-group button.rbc-active {
+  background-color: #0d9488 !important; /* teal-600 */
+  color: white !important;
+  border-color: #0d9488 !important;
+}
+
+.rbc-btn-group button:hover {
+  background-color: #f0fdfa !important; /* teal-50 */
+}
+
+.rbc-btn-group button.rbc-active:hover {
+  background-color: #0f766e !important; /* teal-700 */
+}
+
+.rbc-event.rbc-selected {
+  background-color: #0f766e !important; /* teal-700 */
+}
+
+.rbc-day-slot .rbc-event {
+  border-left: 4px solid #0f766e !important; /* teal-700 */
+}
+
+.rbc-current-time-indicator {
+  background-color: #0d9488 !important; /* teal-600 */
+}
+
+.rbc-show-more {
+  color: #0d9488 !important; /* teal-600 */
+}
+
+.rbc-show-more:hover {
+  color: #0f766e !important; /* teal-700 */
+} 

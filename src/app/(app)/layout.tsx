@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import Navbar from '@/components/common/Navbar';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { 
   HomeIcon, 
@@ -12,15 +13,19 @@ import {
   QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
+const getBasePath = () => {
+  return process.env.NODE_ENV === 'production' ? '/careertrackpro' : '';
+};
+
 const navigationItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Applications', href: '/applications', icon: BriefcaseIcon },
-  { name: 'Monthly Summary', href: '/monthly-summary', icon: ChartBarIcon },
+  { name: 'Dashboard', href: `${getBasePath()}/dashboard`, icon: HomeIcon },
+  { name: 'Applications', href: `${getBasePath()}/applications`, icon: BriefcaseIcon },
+  { name: 'Monthly Summary', href: `${getBasePath()}/monthly-summary`, icon: ChartBarIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-  { name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
+  { name: 'Settings', href: `${getBasePath()}/settings`, icon: Cog6ToothIcon },
+  { name: 'Help', href: `${getBasePath()}/help`, icon: QuestionMarkCircleIcon },
 ];
 
 export default function AppLayout({
@@ -35,20 +40,14 @@ export default function AppLayout({
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/');
+        router.push(getBasePath() + '/');
       }
     };
     checkAuth();
   }, [router]);
 
-  const handleNavigation = (href: string) => {
-    router.push(href);
-  };
-
   const isActivePath = (href: string) => {
-    // Remove any base path from the current pathname for comparison
-    const currentPath = pathname?.replace('/careertrackpro', '') || '';
-    return currentPath === href;
+    return pathname === href;
   };
 
   return (
@@ -70,17 +69,17 @@ export default function AppLayout({
                   {navigationItems.map((item) => {
                     const isActive = isActivePath(item.href);
                     return (
-                      <button
+                      <Link
                         key={item.name}
-                        onClick={() => handleNavigation(item.href)}
-                        className={`nav-link w-full text-left ${isActive ? 'nav-link-active' : ''}`}
+                        href={item.href}
+                        className={`nav-link w-full text-left flex items-center ${isActive ? 'nav-link-active' : ''}`}
                       >
                         <item.icon 
                           className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
                           aria-hidden="true" 
                         />
                         {item.name}
-                      </button>
+                      </Link>
                     );
                   })}
                 </div>
@@ -90,17 +89,17 @@ export default function AppLayout({
                   {secondaryNavigation.map((item) => {
                     const isActive = isActivePath(item.href);
                     return (
-                      <button
+                      <Link
                         key={item.name}
-                        onClick={() => handleNavigation(item.href)}
-                        className={`nav-link w-full text-left ${isActive ? 'nav-link-active' : ''}`}
+                        href={item.href}
+                        className={`nav-link w-full text-left flex items-center ${isActive ? 'nav-link-active' : ''}`}
                       >
                         <item.icon 
                           className={`nav-icon ${isActive ? 'nav-icon-active' : ''}`} 
                           aria-hidden="true" 
                         />
                         {item.name}
-                      </button>
+                      </Link>
                     );
                   })}
                 </div>

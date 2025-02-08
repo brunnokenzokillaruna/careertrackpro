@@ -6,6 +6,7 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: process.env.NODE_ENV === 'production' ? '/careertrackpro' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/careertrackpro/' : '',
   trailingSlash: true,
   // Add rewrites for API routes
   async rewrites() {

@@ -5,6 +5,18 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    'bg-teal-50',
+    'text-teal-700',
+    'text-teal-600',
+    'bg-white',
+    'text-gray-900',
+    'hover:bg-gray-50',
+    'hover:text-gray-900',
+    {
+      pattern: /^(bg|text|border|hover:bg|hover:text)-(teal|gray|red|green|blue|yellow)-[0-9]+$/,
+    },
+  ],
   theme: {
     extend: {
       colors: {

@@ -7,15 +7,17 @@ const nextConfig = {
   output: 'export',
   images: {
     unoptimized: true,
-    domains: ['github.io'],
   },
   basePath: isProduction ? `/${repoName}` : '',
-  assetPrefix: isProduction ? `/${repoName}/` : '/',
+  assetPrefix: isProduction ? `/${repoName}/` : '',
   trailingSlash: true,
   // Add webpack configuration to handle CSS properly
   webpack: (config) => {
     if (isProduction) {
-      config.output.publicPath = `/${repoName}/`;
+      config.output = {
+        ...config.output,
+        publicPath: `/${repoName}/`,
+      };
     }
     return config;
   },

@@ -42,11 +42,12 @@ export default function AppLayout({
   }, [router]);
 
   const getBasePath = () => {
-    return process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro' : '';
+    return process.env.NODE_ENV === 'production' ? '/careertrackpro' : '';
   };
 
   const handleNavigation = (href: string) => {
-    router.push(`${getBasePath()}${href}`);
+    const cleanHref = href.replace(/^\/careertrackpro/, '');
+    router.push(`${getBasePath()}${cleanHref}`);
   };
 
   return (

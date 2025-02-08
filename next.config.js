@@ -11,6 +11,15 @@ const nextConfig = {
   basePath: isProduction ? `/${repoName}` : '',
   assetPrefix: isProduction ? `/${repoName}` : '',
   trailingSlash: true,
+  // Add rewrites for API routes
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig; 

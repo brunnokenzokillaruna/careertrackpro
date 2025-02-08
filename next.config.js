@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+const isProduction = process.env.NODE_ENV === 'production';
+const repoName = 'CareerTrack-Pro';
+
 const nextConfig = {
   // This setting tells Next.js to produce a static build.
   output: 'export',
@@ -6,9 +9,16 @@ const nextConfig = {
     unoptimized: true,
     domains: ['github.io'],
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/CareerTrack-Pro/' : '',
+  basePath: isProduction ? `/${repoName}` : '',
+  assetPrefix: isProduction ? `/${repoName}/` : '/',
   trailingSlash: true,
+  // Add webpack configuration to handle CSS properly
+  webpack: (config) => {
+    if (isProduction) {
+      config.output.publicPath = `/${repoName}/`;
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig; 

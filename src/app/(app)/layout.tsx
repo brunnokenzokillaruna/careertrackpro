@@ -13,14 +13,14 @@ import {
 } from '@heroicons/react/24/outline';
 
 const navigationItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Applications', href: '/applications', icon: BriefcaseIcon },
-  { name: 'Monthly Summary', href: '/monthly-summary', icon: ChartBarIcon },
+  { name: 'Dashboard', href: '/careertrackpro/dashboard', icon: HomeIcon },
+  { name: 'Applications', href: '/careertrackpro/applications', icon: BriefcaseIcon },
+  { name: 'Monthly Summary', href: '/careertrackpro/monthly-summary', icon: ChartBarIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-  { name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
+  { name: 'Settings', href: '/careertrackpro/settings', icon: Cog6ToothIcon },
+  { name: 'Help', href: '/careertrackpro/help', icon: QuestionMarkCircleIcon },
 ];
 
 export default function AppLayout({
@@ -35,26 +35,25 @@ export default function AppLayout({
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push(getBasePath() + '/');
+        router.push('/careertrackpro/');
       }
     };
     checkAuth();
   }, [router]);
 
-  const getBasePath = () => {
-    return process.env.NODE_ENV === 'production' ? '/careertrackpro' : '';
-  };
-
   const handleNavigation = (href: string) => {
-    // Remove any existing base path and ensure proper formatting
-    const cleanHref = href.replace(/^\/careertrackpro/, '').replace(/^\/+/, '/');
-    const fullPath = `${getBasePath()}${cleanHref}`;
-    router.push(fullPath);
+    if (process.env.NODE_ENV === 'development') {
+      // In development, remove the /careertrackpro prefix
+      href = href.replace('/careertrackpro', '');
+    }
+    router.push(href);
   };
 
   const isActivePath = (href: string) => {
-    const currentPath = pathname?.replace(getBasePath(), '') || '';
-    return currentPath.startsWith(href);
+    if (process.env.NODE_ENV === 'development') {
+      href = href.replace('/careertrackpro', '');
+    }
+    return pathname === href;
   };
 
   return (

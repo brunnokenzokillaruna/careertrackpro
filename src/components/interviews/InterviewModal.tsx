@@ -60,12 +60,22 @@ export default function InterviewModal({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // If editing an existing interview, include the current application regardless of status
+      const query = supabase
         .from('job_applications')
         .select('*')
         .eq('user_id', user.id)
-        .in('status', ['Applied', 'Interviewing'])
         .order('company', { ascending: true });
+
+      // For new interviews, only show applications with 'Applied' status
+      if (!interview) {
+        query.eq('status', 'Applied');
+      } else {
+        // For existing interviews, include the current application and other 'Applied' applications
+        query.or(`id.eq.${interview.application_id},status.eq.Applied`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setApplications(data || []);

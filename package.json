@@ -21,7 +21,7 @@
     "cssnano": "^7.0.6",
     "date-fns": "3.3.1",
     "dotenv": "^16.4.7",
-    "framer-motion": "^11.0.5",
+    "framer-motion": "^12.4.7",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.0",
     "jspdf-html2canvas": "^1.5.2",

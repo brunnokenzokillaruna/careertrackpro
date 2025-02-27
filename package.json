@@ -10,7 +10,7 @@
     "migrate": "node scripts/run-migrations.js"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/react": "^3.8.1",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@headlessui/react": "1.7.18",

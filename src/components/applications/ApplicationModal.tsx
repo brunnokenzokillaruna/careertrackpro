@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { JobApplication } from '@/lib/types';
 import toast from 'react-hot-toast';
+import GenerateDocsConfirmModal from './GenerateDocsConfirmModal';
+import GenerateDocsModal from './GenerateDocsModal';
+import { Transition } from '@headlessui/react';
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -23,6 +26,11 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
     job_url: '',
     platform: '',
   });
+  const [showGenerateDocsConfirmModal, setShowGenerateDocsConfirmModal] = useState(false);
+  const [showGenerateDocsModal, setShowGenerateDocsModal] = useState(false);
+  const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
+  const [jobDescription, setJobDescription] = useState('');
+  const [documentLanguage, setDocumentLanguage] = useState('english');
 
   useEffect(() => {
     if (application) {
@@ -124,6 +132,8 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
         }
 
         toast.success('Application updated successfully!');
+        onApplicationAdded();
+        onClose();
       } else {
         // Create new application
         const { data, error } = await supabase
@@ -142,10 +152,16 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
         }
 
         toast.success('Application added successfully!');
+        
+        // Store the new application for document generation
+        setNewApplication(data);
+        
+        // Show the generate documents confirmation modal
+        setShowGenerateDocsConfirmModal(true);
+        
+        // Call the callback
+        onApplicationAdded();
       }
-
-      onApplicationAdded();
-      onClose();
     } catch (error: any) {
       console.error('Error saving application:', error);
       toast.error(error.message || 'Failed to save application');
@@ -184,144 +200,179 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
     }
   };
 
+  const handleGenerateConfirm = (jobDescription: string, language: string) => {
+    setJobDescription(jobDescription);
+    setDocumentLanguage(language);
+    setShowGenerateDocsConfirmModal(false);
+    setShowGenerateDocsModal(true);
+  };
+
+  const handleCloseGenerateModal = () => {
+    setShowGenerateDocsModal(false);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center px-4">
-        {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
+    <Transition.Root show={isOpen} as="div">
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex min-h-screen items-center justify-center px-4">
+          {/* Backdrop */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
 
-        {/* Modal */}
-        <div className="relative w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all">
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
-          >
-            <span className="sr-only">Close</span>
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          {/* Modal */}
+          <div className="relative w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all">
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
+            >
+              <span className="sr-only">Close</span>
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-          <h2 className="text-xl font-semibold text-gray-900">
-            {application ? 'Edit Application' : 'Add New Application'}
-          </h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {application ? 'Edit Application' : 'Add New Application'}
+            </h2>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                Company
-              </label>
-              <input
-                type="text"
-                id="company"
-                required
-                value={formData.company}
-                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+              <div>
+                <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  id="company"
+                  required
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="position" className="block text-sm font-medium text-gray-700">
-                Position
-              </label>
-              <input
-                type="text"
-                id="position"
-                required
-                value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              />
-            </div>
+              <div>
+                <label htmlFor="position" className="block text-sm font-medium text-gray-700">
+                  Position
+                </label>
+                <input
+                  type="text"
+                  id="position"
+                  required
+                  value={formData.position}
+                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <select
-                id="status"
-                required
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as JobApplication['status'] })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              >
-                <option value="Applied">Applied</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Offer">Offer</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
+              <div>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  required
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as JobApplication['status'] })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                >
+                  <option value="Applied">Applied</option>
+                  <option value="Interviewing">Interviewing</option>
+                  <option value="Offer">Offer</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
 
-            <div>
-              <label htmlFor="applied_date" className="block text-sm font-medium text-gray-700">
-                Applied Date
-              </label>
-              <input
-                type="date"
-                id="applied_date"
-                required
-                value={formData.applied_date}
-                onChange={(e) => setFormData({ ...formData, applied_date: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              />
-            </div>
+              <div>
+                <label htmlFor="applied_date" className="block text-sm font-medium text-gray-700">
+                  Applied Date
+                </label>
+                <input
+                  type="date"
+                  id="applied_date"
+                  required
+                  value={formData.applied_date}
+                  onChange={(e) => setFormData({ ...formData, applied_date: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="job_url" className="block text-sm font-medium text-gray-700">
-                Job URL
-              </label>
-              <input
-                type="url"
-                id="job_url"
-                value={formData.job_url}
-                onChange={(e) => setFormData({ ...formData, job_url: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              />
-            </div>
+              <div>
+                <label htmlFor="job_url" className="block text-sm font-medium text-gray-700">
+                  Job URL
+                </label>
+                <input
+                  type="url"
+                  id="job_url"
+                  value={formData.job_url}
+                  onChange={(e) => setFormData({ ...formData, job_url: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="platform" className="block text-sm font-medium text-gray-700">
-                Platform
-              </label>
-              <input
-                type="text"
-                id="platform"
-                value={formData.platform}
-                onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                placeholder="e.g., LinkedIn, Indeed, Company Website"
-              />
-            </div>
+              <div>
+                <label htmlFor="platform" className="block text-sm font-medium text-gray-700">
+                  Platform
+                </label>
+                <input
+                  type="text"
+                  id="platform"
+                  value={formData.platform}
+                  onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="e.g., LinkedIn, Indeed, Company Website"
+                />
+              </div>
 
-            <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                Notes
-              </label>
-              <textarea
-                id="notes"
-                rows={3}
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-              />
-            </div>
+              <div>
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                  Notes
+                </label>
+                <textarea
+                  id="notes"
+                  rows={3}
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
 
-            <div className="mt-6">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : application ? 'Update Application' : 'Add Application'}
-              </button>
-            </div>
-          </form>
+              <div className="mt-6">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : application ? 'Update Application' : 'Add Application'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Generate Documents Confirmation Modal */}
+      {showGenerateDocsConfirmModal && newApplication && (
+        <GenerateDocsConfirmModal
+          isOpen={showGenerateDocsConfirmModal}
+          onClose={() => setShowGenerateDocsConfirmModal(false)}
+          onConfirm={handleGenerateConfirm}
+          application={newApplication}
+        />
+      )}
+
+      {/* Generate Documents Modal */}
+      {showGenerateDocsModal && (newApplication || application) && (
+        <GenerateDocsModal
+          isOpen={showGenerateDocsModal}
+          onClose={handleCloseGenerateModal}
+          application={newApplication || application!}
+          initialJobDescription={jobDescription}
+          language={documentLanguage}
+        />
+      )}
+    </Transition.Root>
   );
 } 

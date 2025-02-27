@@ -1,10 +1,8 @@
-'use client';
-
-import React, { useEffect } from 'react';
-import Navbar from '@/components/common/Navbar';
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import Navbar from './Navbar';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   HomeIcon, 
   BriefcaseIcon, 
@@ -16,39 +14,48 @@ import {
 
 // Define base navigation items without any path manipulation
 const navigationItems = [
-  { name: 'Dashboard', href: 'dashboard', icon: HomeIcon },
-  { name: 'Applications', href: 'applications', icon: BriefcaseIcon },
-  { name: 'Monthly Summary', href: 'monthly-summary', icon: ChartBarIcon },
-  { name: 'Profile', href: 'profile', icon: UserIcon },
+  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Applications', href: '/applications', icon: BriefcaseIcon },
+  { name: 'Monthly Summary', href: '/monthly-summary', icon: ChartBarIcon },
+  { name: 'Profile', href: '/profile', icon: UserIcon },
 ];
 
 const secondaryNavigation = [
-  { name: 'Settings', href: 'settings', icon: Cog6ToothIcon },
-  { name: 'Help', href: 'help', icon: QuestionMarkCircleIcon },
+  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+  { name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
 ];
 
-export default function AppLayout({
-  children,
-}: {
+interface LayoutProps {
   children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const router = useRouter();
+}
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/');
-      }
-    };
-    checkAuth();
-  }, [router]);
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  // Redirect to login if not authenticated
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
   // Simplified active path check
   const isActivePath = (href: string) => {
-    return pathname?.includes(href) || false;
+    return router.pathname === href;
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,7 +78,7 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={`/${item.href}`}
+                        href={item.href}
                         className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'
@@ -99,7 +106,7 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
-                        href={`/${item.href}`}
+                        href={item.href}
                         className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'
@@ -136,4 +143,6 @@ export default function AppLayout({
       </div>
     </div>
   );
-} 
+};
+
+export default Layout; 

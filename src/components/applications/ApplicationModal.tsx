@@ -4,8 +4,6 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { JobApplication } from '@/lib/types';
 import toast from 'react-hot-toast';
-import GenerateDocsConfirmModal from './GenerateDocsConfirmModal';
-import GenerateDocsModal from './GenerateDocsModal';
 import { Transition } from '@headlessui/react';
 
 interface ApplicationModalProps {
@@ -22,15 +20,10 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
     position: '',
     status: 'Applied',
     applied_date: new Date().toISOString().split('T')[0],
-    notes: '',
+    job_description: '',
     job_url: '',
     platform: '',
   });
-  const [showGenerateDocsConfirmModal, setShowGenerateDocsConfirmModal] = useState(false);
-  const [showGenerateDocsModal, setShowGenerateDocsModal] = useState(false);
-  const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
-  const [jobDescription, setJobDescription] = useState('');
-  const [documentLanguage, setDocumentLanguage] = useState('english');
 
   useEffect(() => {
     if (application) {
@@ -39,7 +32,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
         position: application.position || '',
         status: application.status || 'Applied',
         applied_date: new Date(application.applied_date).toISOString().split('T')[0],
-        notes: application.notes || '',
+        job_description: application.job_description || application.notes || '',
         job_url: application.job_url || '',
         platform: application.platform || '',
       });
@@ -50,7 +43,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
         position: '',
         status: 'Applied',
         applied_date: new Date().toISOString().split('T')[0],
-        notes: '',
+        job_description: '',
         job_url: '',
         platform: '',
       });
@@ -74,7 +67,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
         position: formData.position.trim(),
         status: formData.status,
         applied_date: formData.applied_date,
-        notes: formData.notes?.trim() || null,
+        job_description: formData.job_description?.trim() || null,
         job_url: formData.job_url?.trim() || null,
         platform: formData.platform?.trim() || null,
       };
@@ -153,14 +146,11 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
 
         toast.success('Application added successfully!');
         
-        // Store the new application for document generation
-        setNewApplication(data);
-        
-        // Show the generate documents confirmation modal
-        setShowGenerateDocsConfirmModal(true);
-        
         // Call the callback
         onApplicationAdded();
+        
+        // Close the modal
+        onClose();
       }
     } catch (error: any) {
       console.error('Error saving application:', error);
@@ -198,18 +188,6 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGenerateConfirm = (jobDescription: string, language: string) => {
-    setJobDescription(jobDescription);
-    setDocumentLanguage(language);
-    setShowGenerateDocsConfirmModal(false);
-    setShowGenerateDocsModal(true);
-  };
-
-  const handleCloseGenerateModal = () => {
-    setShowGenerateDocsModal(false);
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -250,6 +228,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="e.g., Google, Microsoft, Amazon"
                 />
               </div>
 
@@ -264,6 +243,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="e.g., Software Engineer, Product Manager"
                 />
               </div>
 
@@ -309,6 +289,7 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
                   value={formData.job_url}
                   onChange={(e) => setFormData({ ...formData, job_url: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="e.g., https://company.com/careers/job-posting"
                 />
               </div>
 
@@ -327,15 +308,16 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
               </div>
 
               <div>
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                  Notes
+                <label htmlFor="job_description" className="block text-sm font-medium text-gray-700">
+                  Job Description
                 </label>
                 <textarea
-                  id="notes"
+                  id="job_description"
                   rows={3}
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  value={formData.job_description}
+                  onChange={(e) => setFormData({ ...formData, job_description: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                  placeholder="Paste the full job description here..."
                 />
               </div>
 
@@ -352,27 +334,6 @@ export default function ApplicationModal({ isOpen, onClose, onApplicationAdded, 
           </div>
         </div>
       </div>
-
-      {/* Generate Documents Confirmation Modal */}
-      {showGenerateDocsConfirmModal && newApplication && (
-        <GenerateDocsConfirmModal
-          isOpen={showGenerateDocsConfirmModal}
-          onClose={() => setShowGenerateDocsConfirmModal(false)}
-          onConfirm={handleGenerateConfirm}
-          application={newApplication}
-        />
-      )}
-
-      {/* Generate Documents Modal */}
-      {showGenerateDocsModal && (newApplication || application) && (
-        <GenerateDocsModal
-          isOpen={showGenerateDocsModal}
-          onClose={handleCloseGenerateModal}
-          application={newApplication || application!}
-          initialJobDescription={jobDescription}
-          language={documentLanguage}
-        />
-      )}
     </Transition.Root>
   );
 } 

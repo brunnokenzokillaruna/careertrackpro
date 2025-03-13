@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import '../lib/supabase/patchSupabaseClient';
 
 const inter = Inter({ subsets: ['latin'] });
 

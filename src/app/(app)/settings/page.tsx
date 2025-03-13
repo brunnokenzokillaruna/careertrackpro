@@ -20,13 +20,36 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user data from the users table
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading user data:', error);
+        // If user doesn't exist in the users table, create a new record
+        if (error.code === 'PGRST116') {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: user.id,
+              email: user.email,
+              name: '',
+            });
+          
+          if (insertError) throw insertError;
+          
+          setProfile({
+            name: '',
+            email: user.email || '',
+          });
+          return;
+        }
+        throw error;
+      }
+
       if (data) {
         setProfile({
           name: data.name || '',
@@ -47,15 +70,58 @@ export default function SettingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      // Update the name in the users table
+      const { error: usersError } = await supabase
         .from('users')
         .update({
           name: profile.name,
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (usersError) throw usersError;
+
+      // Also update the name in the user_profiles table for consistency
+      // First check if a profile exists
+      const { data: existingProfile, error: checkError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Error checking user profile:', checkError);
+      } else {
+        // Update or insert the profile
+        if (existingProfile) {
+          // Update existing profile
+          const { error: updateError } = await supabase
+            .from('user_profiles')
+            .update({ full_name: profile.name })
+            .eq('user_id', user.id);
+            
+          if (updateError) {
+            console.error('Error updating user profile:', updateError);
+          }
+        } else {
+          // Create a new profile
+          const { error: insertError } = await supabase
+            .from('user_profiles')
+            .insert({ 
+              user_id: user.id,
+              full_name: profile.name,
+              email: profile.email
+            });
+            
+          if (insertError) {
+            console.error('Error creating user profile:', insertError);
+          }
+        }
+      }
+
       toast.success('Profile updated successfully');
+      
+      // Force a refresh of the navbar to show the updated name
+      window.dispatchEvent(new Event('storage'));
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile');

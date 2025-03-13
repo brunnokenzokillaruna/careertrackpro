@@ -19,7 +19,6 @@ const navigationItems = [
   { name: 'Dashboard', href: 'dashboard', icon: HomeIcon },
   { name: 'Applications', href: 'applications', icon: BriefcaseIcon },
   { name: 'Monthly Summary', href: 'monthly-summary', icon: ChartBarIcon },
-  { name: 'Profile', href: 'profile', icon: UserIcon },
 ];
 
 const secondaryNavigation = [
@@ -72,17 +71,17 @@ export default function AppLayout({
                       <Link
                         key={item.name}
                         href={`/${item.href}`}
-                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            : 'text-gray-600 hover:bg-teal-50/50 hover:text-teal-600'
                         }`}
                       >
                         <item.icon
-                          className={`mr-3 h-6 w-6 flex-shrink-0 ${
+                          className={`mr-3 h-6 w-6 flex-shrink-0 transition-colors duration-200 ${
                             isActive
                               ? 'text-teal-600'
-                              : 'text-gray-400 group-hover:text-gray-500'
+                              : 'text-gray-400 group-hover:text-teal-500'
                           }`}
                           aria-hidden="true"
                         />
@@ -100,17 +99,17 @@ export default function AppLayout({
                       <Link
                         key={item.name}
                         href={`/${item.href}`}
-                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                           isActive
                             ? 'bg-teal-50 text-teal-600'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            : 'text-gray-600 hover:bg-teal-50/50 hover:text-teal-600'
                         }`}
                       >
                         <item.icon
-                          className={`mr-3 h-6 w-6 flex-shrink-0 ${
+                          className={`mr-3 h-6 w-6 flex-shrink-0 transition-colors duration-200 ${
                             isActive
                               ? 'text-teal-600'
-                              : 'text-gray-400 group-hover:text-gray-500'
+                              : 'text-gray-400 group-hover:text-teal-500'
                           }`}
                           aria-hidden="true"
                         />

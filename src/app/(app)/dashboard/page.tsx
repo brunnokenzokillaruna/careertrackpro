@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import InterviewModal from '@/components/interviews/InterviewModal';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import CalendarPatch from '@/components/calendar/CalendarPatch';
 
 const locales = {
   'en-US': require('date-fns/locale/en-US'),
@@ -110,6 +111,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <CalendarPatch />
+
       <div>
         <div className="sm:flex sm:items-center sm:justify-between">
           <div>

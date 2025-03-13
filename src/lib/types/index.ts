@@ -13,6 +13,7 @@ export interface JobApplication {
   status: 'Applied' | 'Interviewing' | 'Offer' | 'Rejected';
   applied_date: string;
   notes?: string;
+  job_description?: string;
   job_url?: string;
   platform?: string;
   created_at: string;

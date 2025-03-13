@@ -13,6 +13,7 @@ module.exports = {
     'text-gray-900',
     'hover:bg-gray-50',
     'hover:text-gray-900',
+    'animate-pulse-subtle',
     {
       pattern: /^(bg|text|border|hover:bg|hover:text)-(teal|gray|red|green|blue|yellow)-[0-9]+$/,
     },
@@ -35,6 +36,15 @@ module.exports = {
           700: '#0f766e',
           800: '#115e59',
           900: '#134e4a',
+        },
+      },
+      animation: {
+        'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
+      },
+      keyframes: {
+        'pulse-subtle': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
         },
       },
     },

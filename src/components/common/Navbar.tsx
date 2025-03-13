@@ -2,10 +2,11 @@
 
 import React, { Fragment, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 import { Menu, Transition, Popover } from '@headlessui/react';
-import { BellIcon, UserCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { BellIcon, UserCircleIcon, MagnifyingGlassIcon, UserIcon, ArrowRightOnRectangleIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { JobApplication } from '@/lib/types';
 
 export default function Navbar() {
@@ -15,11 +16,72 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<JobApplication[]>([]);
   const [notifications, setNotifications] = useState<{ id: number; title: string; message: string; date: string }[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [userFullName, setUserFullName] = useState('');
 
   useEffect(() => {
     // Load notifications
     loadNotifications();
+    // Load user profile data
+    loadUserProfile();
+    
+    // Add event listener to refresh user profile when storage event is triggered
+    const handleStorageEvent = () => {
+      loadUserProfile();
+    };
+    
+    window.addEventListener('storage', handleStorageEvent);
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
   }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // First, try to get the name from the users table (primary source)
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('name')
+        .eq('id', user.id)
+        .single();
+
+      if (userData && userData.name) {
+        setUserFullName(userData.name);
+        return;
+      }
+
+      // If no name in users table or there was an error, try the user_profiles table as fallback
+      if (userError) {
+        console.log('Error fetching from users table, trying user_profiles:', userError);
+      }
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('full_name')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileData && profileData.full_name) {
+        setUserFullName(profileData.full_name);
+        
+        // Optionally sync the name to users table for consistency
+        try {
+          await supabase
+            .from('users')
+            .update({ name: profileData.full_name })
+            .eq('id', user.id);
+        } catch (syncError) {
+          console.error('Error syncing name to users table:', syncError);
+        }
+      }
+    } catch (error) {
+      console.error('Error in loadUserProfile:', error);
+    }
+  };
 
   const loadNotifications = async () => {
     try {
@@ -217,14 +279,23 @@ export default function Navbar() {
           <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
 
           {/* Profile dropdown */}
-          <Menu as="div" className="relative">
-            <Menu.Button className="-m-1.5 flex items-center p-1.5">
+          <Menu as="div" className="relative group">
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+              Click for account options
+              <svg className="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon className="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+            </div>
+            <Menu.Button className="-m-1.5 flex items-center p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200">
               <span className="sr-only">Open user menu</span>
-              <UserCircleIcon className="h-8 w-8 text-gray-400" aria-hidden="true" />
+              <div className="relative">
+                <UserCircleIcon className="h-8 w-8 text-teal-600 animate-pulse-subtle" aria-hidden="true" />
+              </div>
               <span className="hidden lg:flex lg:items-center">
-                <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                  My Account
+                <span className="ml-4 text-sm font-semibold leading-6 text-teal-600" aria-hidden="true">
+                  {userFullName || 'My Account'}
                 </span>
+                <svg className="ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
               </span>
             </Menu.Button>
             <Transition
@@ -236,15 +307,42 @@ export default function Navbar() {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+              <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none sm:w-48 max-sm:fixed max-sm:right-2 max-sm:top-14">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/profile"
+                      className={`${
+                        active ? 'bg-teal-50 text-teal-600' : 'text-gray-900'
+                      } block w-full px-3 py-2 sm:py-1 text-left text-sm leading-6 flex items-center`}
+                    >
+                      <UserIcon className={`h-5 w-5 mr-2 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
+                      Profile
+                    </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link
+                      href="/api-keys"
+                      className={`${
+                        active ? 'bg-teal-50 text-teal-600' : 'text-gray-900'
+                      } block w-full px-3 py-2 sm:py-1 text-left text-sm leading-6 flex items-center`}
+                    >
+                      <KeyIcon className={`h-5 w-5 mr-2 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
+                      API Keys
+                    </Link>
+                  )}
+                </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
                     <button
                       onClick={handleSignOut}
                       className={`${
-                        active ? 'bg-gray-50' : ''
-                      } block w-full px-3 py-1 text-left text-sm leading-6 text-gray-900`}
+                        active ? 'bg-teal-50 text-teal-600' : 'text-gray-900'
+                      } block w-full px-3 py-2 sm:py-1 text-left text-sm leading-6 flex items-center`}
                     >
+                      <ArrowRightOnRectangleIcon className={`h-5 w-5 mr-2 ${active ? 'text-teal-600' : 'text-gray-500'}`} />
                       Sign out
                     </button>
                   )}

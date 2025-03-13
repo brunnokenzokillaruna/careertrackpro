@@ -14,6 +14,9 @@ A comprehensive job application tracking system built with Next.js, Tailwind CSS
 - **Document Generation**: Create tailored resumes and cover letters using AI
 - **Settings & Profile**: Manage user settings and preferences
 - **Help Center**: Find answers to common questions
+- **Career Goal Setting**: Set and monitor your short and long-term career goals
+- **Skills Management**: Track your skills development and identify areas for growth
+- **Network Management**: Keep track of your professional connections
 
 ## Tech Stack
 
@@ -33,20 +36,22 @@ A comprehensive job application tracking system built with Next.js, Tailwind CSS
 
 1. Clone the repository:
 
-   ```
-   git clone https://github.com/careertrackpro/careertrackpro.git
+   ```bash
+   git clone https://github.com/brunnokenzokillaruna/careertrackpro.git
    cd careertrackpro
    ```
 
 2. Install dependencies:
 
-   ```
+   ```bash
    npm install
+   # or
+   yarn install
    ```
 
 3. Copy the `.env.local.example` file to `.env.local` and update with your credentials:
 
-   ```
+   ```bash
    cp .env.local.example .env.local
    ```
 
@@ -61,8 +66,10 @@ A comprehensive job application tracking system built with Next.js, Tailwind CSS
 
 4. Run the development server:
 
-   ```
+   ```bash
    npm run dev
+   # or
+   yarn dev
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -72,7 +79,7 @@ A comprehensive job application tracking system built with Next.js, Tailwind CSS
 1. Create a new Supabase project
 2. Run the database migrations:
 
-   ```
+   ```bash
    npm run migrate
    ```
 
@@ -152,15 +159,7 @@ npm run lint
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Acknowledgments
 

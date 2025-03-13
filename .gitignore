@@ -84,3 +84,10 @@ logs
 
 # External repositories
 /browser-tools-mcp/
+
+# Temporary folders
+.swc/
+.turbo/
+
+# Cache folders
+.cache/
